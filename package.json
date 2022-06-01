@@ -1,0 +1,43 @@
+{
+  "name": "hackathon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "author": "Abdussamad Yisau",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cloudinary": "^1.27.1",
+    "config": "^3.3.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.13.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "mongoose": "^5.11.17",
+    "multer": "^1.4.3",
+    "multer-storage-cloudinary": "^4.0.0",
+    "node-mailjet": "^3.3.4",
+    "nodemailer": "^6.7.2",
+    "nodemon": "^2.0.15",
+    "randexp": "^0.5.3",
+    "request": "^2.88.2",
+    "shortid": "^2.2.16",
+    "slugify": "^1.6.2",
+    "socket.io": "^4.4.1",
+    "twilio": "^3.71.3",
+    "valid-url": "^1.0.9"
+  },
+  "engines": {
+    "node": "14.x"
+  }
+}
