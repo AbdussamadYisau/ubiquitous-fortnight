@@ -5,6 +5,7 @@ const http = require("http");
 const server = http.createServer(app);
 const cors = require("cors");
 const users = require("./routes/user");
+const inventories = require("./routes/inventories");
 require("dotenv/config");
 
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(cors());
 // Define Routes
 app.use("/v1", users);
+app.use("/v1", inventories);
 
 app.get("/", (req, res) => {
   // Health Check

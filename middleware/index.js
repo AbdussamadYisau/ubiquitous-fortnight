@@ -3,7 +3,6 @@ require("dotenv/config");
 
 const requireSignin = (req, res, next) => {
   const token = req.get("Authorization")?.split(" ")[1];
-
   if (token) {
     jwt.verify(
       token,

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { requireSignin, userMiddleware } = require("../middleware");
+const { requireSignin, userMiddleware, adminMiddleware } = require("../middleware");
 require("dotenv/config");
 const {
   recover,
@@ -27,7 +27,7 @@ isRequestValidated,
 login);
 
 // @route GET /customers
-router.get("/users/customers", requireSignin, getAllUsers);
+router.get("/users/customers", requireSignin, userMiddleware, getAllUsers);
 
 // @route POST /changePassword
 router.post("/changePassword/:id", requireSignin, changePassword);

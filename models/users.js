@@ -11,22 +11,16 @@ const usersSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
-    state: {
-      type: String,
-      required: true
-    },
-    language: {
-        type: String,
-        required: true
-    },
+    
     password: {
       type: String,
       minlength: 8,
       required: true,
     },
-    capacityOfAnimals: {
-        type: Number,
-        required: true
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
     rememberToken: {
       token: {
@@ -52,4 +46,4 @@ const usersSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Users", usersSchema);
+module.exports = mongoose.model("ApplicationUsers", usersSchema);

@@ -6,9 +6,9 @@ const { JsonResponse } = require("../lib/apiResponse");
 const { MSG_TYPES } = require("../constant/types");
 require("dotenv/config");
 
-const generateJwtToken = (_id, username) => {
+const generateJwtToken = (_id, role, username) => {
   return jwt.sign(
-    { _id, username },
+    { _id, role, username },
     process.env.JWT_SECRET_TOKEN_SECRET,
     {
       expiresIn: "1d",
@@ -84,15 +84,12 @@ const register = (req, res) => {
         message: "User already registered",
       });
 
-    const { fullname, email, password, state, language, capacityOfAnimals } = req.body;
+    const { fullname, email, password } = req.body;
     const hash_password = await bcrypt.hash(password, 10);
     const _user = new UserModel({
       fullname,
       email: email.toLowerCase(),
-      password: hash_password,
-      state,
-      language,
-      capacityOfAnimals
+      password: hash_password
     });
 
     _user.save( async (error, user) => {
@@ -105,8 +102,8 @@ const register = (req, res) => {
       }
 
       if (user) {
-        const token = generateJwtToken(user._id, user.fullname);
-        const { _id, fullname, email, state, language, capacityOfAnimals } =
+        const token = generateJwtToken(user._id, user.role, user.fullname);
+        const { _id, fullname, role, email } =
           user;
 
         return res.status(201).json({
@@ -116,7 +113,7 @@ const register = (req, res) => {
           token,
           data: {
             _id,
-            fullname, email, state, language, capacityOfAnimals
+            fullname, email, role
           },
         });
       }
@@ -131,10 +128,9 @@ const login = (req, res) => {
     if (error) return res.status(400).json({ error });
     if (user) {
       const isPassword = await bcrypt.compare(req.body.password, user.password);
-      if (isPassword) {
-        const token = generateJwtToken(user._id, user.fullname);
-        const { _id, fullname, email, state, language, capacityOfAnimals } =
-          user;
+      if (isPassword && user.role === 'user') {
+        const token = generateJwtToken(user._id, user.role, user.fullname);
+        const {_id, fullname, role,  email} = user;
         res.status(200).json({
           status: "Success",
           statusCode: 1,
@@ -142,14 +138,15 @@ const login = (req, res) => {
           token,
           data: {
             _id,
-            fullname, email, state, language, capacityOfAnimals
+            fullname,
+            email,
+            role
           }
         });
       } else {
         return res.status(400).json({
           status: "Fail",
           statusCode: 0,
-
           message: "Username/Password is incorrect",
         });
       }
@@ -165,7 +162,7 @@ const login = (req, res) => {
 
 
 const getAllUsers = (req, res) => {
-  UserModel.find({})
+  UserModel.find({role: 'user'})
     .select({
       password: 0,
       rememberToken: 0,
@@ -191,34 +188,33 @@ const getAllUsers = (req, res) => {
     });
 };
 
-// const getAllMembers = (req, res) => {
+const getAllAdmins = (req, res) => {
 
-//   UserModel.find({ role: "admin" })
-//     .select({
-//       password: 0,
-//       rememberToken: 0,
-//       passwordRetrieve: 0,
-//       hasVerifiedPhoneNumber: 0,
-//     })
-//     .exec()
-//     .then((admin) => {
-//       return res.status(200).json({
-//         status: "Success",
-//         statusCode: 1,
-//         message: "List of admins retrieved successfully",
-//         data: admin,
-//         count: admin.length,
-//       });
-//     })
-//     .catch((error) => {
-//       return res.status(500).json({
-//         status: "Fail",
-//         statusCode: 0,
-//         message: error.message,
-//         error,
-//       });
-//     });
-// };
+  UserModel.find({ role: "admin" })
+    .select({
+      password: 0,
+      rememberToken: 0,
+      passwordRetrieve: 0,
+    })
+    .exec()
+    .then((admin) => {
+      return res.status(200).json({
+        status: "Success",
+        statusCode: 1,
+        message: "List of admins retrieved successfully",
+        data: admin,
+        count: admin.length,
+      });
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        status: "Fail",
+        statusCode: 0,
+        message: error.message,
+        error,
+      });
+    });
+};
 
 const changePassword = async (req, res) => {
   const { newPassword, confirmNewPassword, oldPassword } = req.body;
@@ -276,17 +272,17 @@ const getUser = async (req, res) => {
   const userId = req.params.id;
 
   try {
-    const editUserWithId = await UserModel.findById(userId).select({
+    const getUserWithId = await UserModel.findById(userId).select({
       password: 0,
       rememberToken: 0,
       passwordRetrieve: 0,
     });
-    if (editUserWithId) {
+    if (getUserWithId) {
       return res.status(200).json({
         status: "Success",
         statusCode: 1,
         message: "User Details retrieved successfully",
-        data: editUserWithId.select({
+        data: getUserWithId.select({
           password: 0,
           rememberToken: 0,
           passwordRetrieve: 0
@@ -339,6 +335,7 @@ module.exports = {
   register,
   login,
   getAllUsers,
+  getAllAdmins,
   changePassword,
   getUser,
   deleteUser
