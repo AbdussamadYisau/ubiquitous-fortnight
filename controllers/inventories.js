@@ -20,26 +20,54 @@ exports.createInventory = async (req, res, next) => {
             msg: 'Please upload a file'
         })
     } else {
-        const document = req.file.path;
-        const newInventory = new InventoriesModel({
-            name,
-            description,
-            category,
-            document,
-        });
+        try {
+            const document = req.file.path;
 
-        await newInventory.save()
-            .then(() => {
-                res.status(201).json({
-                    msg: 'Inventory created successfully'
-                })
+            let inventoryCheck = await InventoriesModel.find({
+                name,
+                description,
+                category
             })
-            .catch(err => {
-                console.log(err);
-                res.status(500).json({
-                    msg: 'Error occured'
-                })
-            })
+
+            if(inventoryCheck) {
+                return res.status(400).json({
+                    status: "Failed",
+                    statusCode: 0,
+                    message: "Inventory with this name already exists",
+                  });
+            }
+
+            else {
+                const newInventory = new InventoriesModel({
+                    name,
+                    description,
+                    category,
+                    document,
+                });
+        
+                await newInventory.save()
+                    .then(() => {
+                        res.status(201).json({
+                            msg: 'Inventory created successfully'
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({
+                            msg: 'Error occured'
+                        })
+                    })
+            }
+        } catch(error) {
+            return res.status(500).json({
+                status: "Failed",
+                statusCode: 0,
+                message: "There was an error with this request",
+                error: `${error.message}`,
+              });
+        }
+        
+        
     };
 
 };
