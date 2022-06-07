@@ -5,7 +5,8 @@ const inventorySchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "ApplicationUsers",
-      },
+        required: true
+    },
     name: {
         type: String,
         required: true,
