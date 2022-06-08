@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const inventorySchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "ApplicationUsers",
+        ref: "users",
         required: true
     },
     name: {

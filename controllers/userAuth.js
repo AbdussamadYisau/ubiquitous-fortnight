@@ -167,6 +167,7 @@ const getAllUsers = (req, res) => {
       password: 0,
       rememberToken: 0,
       passwordRetrieve: 0,
+      role: 0
     })
     .exec()
     .then((users) => {
