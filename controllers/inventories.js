@@ -29,6 +29,7 @@ exports.createInventory = async (req, res, next) => {
         });
       } else {
         const newInventory = new InventoriesModel({
+          user: req.user._id,
           name,
           description,
           category,
@@ -66,7 +67,7 @@ exports.createInventory = async (req, res, next) => {
 // @access Private
 exports.getInventories = async (req, res, next) => {
 try{
-    const Inventories = await InventoriesModel.find().populate("user", "_id fullName email") ; 
+    const Inventories = await InventoriesModel.find().populate("user", "_id fullname email") ; 
     if(Inventories.length > 0){
         res.status(200).json(
             {
