@@ -66,29 +66,29 @@ exports.createInventory = async (req, res, next) => {
 // @desc   Get all inventories
 // @access Private
 exports.getInventories = async (req, res, next) => {
-try{
-    const Inventories = await InventoriesModel.find().populate("user", "_id fullname email") ; 
-    if(Inventories.length > 0){
-        res.status(200).json(
-            {
-                status: "Success",
-                statusCode: 1,
-                message: "Inventories retrieved successfully",
-                data: Inventories
-            }
-        );
+  try {
+    const Inventories = await InventoriesModel.find().populate(
+      "user",
+      "_id fullname email role psnNumber localGovernmentArea ministry dateOfFirstAssignment lastPromotionDate "
+    );
+    if (Inventories.length > 0) {
+      res.status(200).json({
+        status: "Success",
+        statusCode: 1,
+        message: "Inventories retrieved successfully",
+        data: Inventories,
+      });
+    } else {
+      res.status(404).json({
+        msg: "No inventories found",
+      });
     }
-    else{
-        res.status(404).json({
-            msg: "No inventories found"
-        })
-    }
-} catch (error) {
+  } catch (error) {
     return res.status(500).json({
-        status: "Failed",
-        statusCode: 0,
-        message: "There was an error with this request",
-        error: `${error.message}`,
+      status: "Failed",
+      statusCode: 0,
+      message: "There was an error with this request",
+      error: `${error.message}`,
     });
-}
+  }
 };

@@ -22,6 +22,26 @@ const usersSchema = mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    psnNumber: {
+      type: Number,
+      required: true
+    },
+    localGovernmentArea: {
+      type: String,
+      required: true
+    }, 
+    ministry: {
+      type: String,
+      required: true
+    },
+    dateOfFirstAssignment: {
+      type: String,
+      required: true
+    },
+    lastPromotionDate: {
+      type: String,
+      required: true
+    },
     rememberToken: {
       token: {
         type: String,

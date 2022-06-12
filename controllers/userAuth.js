@@ -84,27 +84,59 @@ const register = (req, res) => {
         message: "User already registered",
       });
 
-    const { fullname, email, password } = req.body;
+    const {
+      fullname,
+      email,
+      password,
+      psnNumber,
+      localGovernmentArea,
+      ministry,
+      dateOfFirstAssignment,
+      lastPromotionDate,
+    } = req.body;
+
+    // Remember date format is MM-DD-YYYY
+    // Converting date format to DD-MM-YYYY
+    const dateOfFirstAssignment_ = dateOfFirstAssignment.split("/");
+    const lastPromotionDate_ = lastPromotionDate.split("/");
+    const dateOfFirstAssignment_new = `${dateOfFirstAssignment_[1]}-${dateOfFirstAssignment_[0]}-${dateOfFirstAssignment_[2]}`;
+    const lastPromotionDate_new = `${lastPromotionDate_[1]}-${lastPromotionDate_[0]}-${lastPromotionDate_[2]}`;
+
     const hash_password = await bcrypt.hash(password, 10);
     const _user = new UserModel({
       fullname,
       email: email.toLowerCase(),
-      password: hash_password
+      password: hash_password,
+      psnNumber,
+      localGovernmentArea,
+      ministry,
+      dateOfFirstAssignment: new Date(dateOfFirstAssignment_new),
+      lastPromotionDate: new Date(lastPromotionDate_new),
     });
 
-    _user.save( async (error, user) => {
+    _user.save(async (error, user) => {
       if (error) {
+        console.log("Error", error);
         return res.status(400).json({
           status: "Failed",
           statusCode: 0,
-          message: "Something went wrong",
+          message: error.message,
         });
       }
 
       if (user) {
         const token = generateJwtToken(user._id, user.role, user.fullname);
-        const { _id, fullname, role, email } =
-          user;
+        const {
+          _id,
+          fullname,
+          role,
+          email,
+          psnNumber,
+          localGovernmentArea,
+          ministry,
+          dateOfFirstAssignment,
+          lastPromotionDate,
+        } = user;
 
         return res.status(201).json({
           status: "Success",
@@ -113,7 +145,14 @@ const register = (req, res) => {
           token,
           data: {
             _id,
-            fullname, email, role
+            fullname,
+            email,
+            role,
+            psnNumber,
+            localGovernmentArea,
+            ministry,
+            dateOfFirstAssignment,
+            lastPromotionDate,
           },
         });
       }
@@ -121,53 +160,70 @@ const register = (req, res) => {
   });
 };
 
-
-
 const login = (req, res) => {
-  UserModel.findOne({ email: req.body.email.toLowerCase()}).exec(async (error, user) => {
-    if (error) return res.status(400).json({ error });
-    if (user) {
-      const isPassword = await bcrypt.compare(req.body.password, user.password);
-      if (isPassword && user.role === 'user') {
-        const token = generateJwtToken(user._id, user.role, user.fullname);
-        const {_id, fullname, role,  email} = user;
-        res.status(200).json({
-          status: "Success",
-          statusCode: 1,
-          message: "Logged in successfully",
-          token,
-          data: {
+  UserModel.findOne({ email: req.body.email.toLowerCase() }).exec(
+    async (error, user) => {
+      if (error) return res.status(400).json({ error });
+      if (user) {
+        const isPassword = await bcrypt.compare(
+          req.body.password,
+          user.password
+        );
+        if (isPassword && user.role === "user") {
+          const token = generateJwtToken(user._id, user.role, user.fullname);
+          const {
             _id,
             fullname,
+            role,
             email,
-            role
-          }
-        });
+            psnNumber,
+            localGovernmentArea,
+            ministry,
+            dateofFirstAssignment,
+            lastPromotionDate,
+          } = user;
+          res.status(200).json({
+            status: "Success",
+            statusCode: 1,
+            message: "Logged in successfully",
+            token,
+            data: {
+              _id,
+              fullname,
+              email,
+              role,
+              psnNumber,
+              localGovernmentArea,
+              ministry,
+              dateofFirstAssignment,
+              lastPromotionDate,
+            },
+          });
+        } else {
+          return res.status(400).json({
+            status: "Fail",
+            statusCode: 0,
+            message: "Username/Password is incorrect",
+          });
+        }
       } else {
         return res.status(400).json({
           status: "Fail",
           statusCode: 0,
-          message: "Username/Password is incorrect",
+          message: "Something went wrong",
         });
       }
-    } else {
-      return res.status(400).json({
-        status: "Fail",
-        statusCode: 0,
-        message: "Something went wrong",
-      });
     }
-  });
+  );
 };
 
-
 const getAllUsers = (req, res) => {
-  UserModel.find({role: 'user'})
+  UserModel.find({ role: "user" })
     .select({
       password: 0,
       rememberToken: 0,
       passwordRetrieve: 0,
-      role: 0
+      role: 0,
     })
     .exec()
     .then((users) => {
@@ -190,7 +246,6 @@ const getAllUsers = (req, res) => {
 };
 
 const getAllAdmins = (req, res) => {
-
   UserModel.find({ role: "admin" })
     .select({
       password: 0,
@@ -268,7 +323,6 @@ const changePassword = async (req, res) => {
   }
 };
 
-
 const getUser = async (req, res) => {
   const userId = req.params.id;
 
@@ -286,8 +340,7 @@ const getUser = async (req, res) => {
         data: getUserWithId.select({
           password: 0,
           rememberToken: 0,
-          passwordRetrieve: 0
-
+          passwordRetrieve: 0,
         }),
       });
     } else {
@@ -339,5 +392,5 @@ module.exports = {
   getAllAdmins,
   changePassword,
   getUser,
-  deleteUser
+  deleteUser,
 };
