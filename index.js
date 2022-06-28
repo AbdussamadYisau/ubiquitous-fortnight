@@ -13,7 +13,11 @@ require("dotenv/config");
 app.use(express.json());
 
 // Middlewares
-app.use(cors());
+app.use(cors(
+  {
+    origin: '*'
+}
+));
 // Define Routes
 app.use("/v1", users);
 app.use("/v1", inventories);
