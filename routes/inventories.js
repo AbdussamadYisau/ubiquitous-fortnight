@@ -13,7 +13,7 @@ const { uploadDoc } = require("../utils");
 
 
 // @route GET /inventories
-router.get("/inventories", requireSignin, userMiddleware, getInventories);
+router.get("/inventories", requireSignin, adminMiddleware, getInventories);
 
 // @route POST /inventories
 router.post("/inventories", uploadDoc, requireSignin, userMiddleware, createInventory);
