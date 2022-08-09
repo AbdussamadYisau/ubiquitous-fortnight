@@ -403,7 +403,7 @@ const sortUsers = async (req, res) => {
     'asc': 1,
     'desc': -1,
     1 : 1,
-  }
+  };
 
   // sort in ascending order
   const sort = {

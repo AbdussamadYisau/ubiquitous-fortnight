@@ -121,3 +121,32 @@ exports.deleteInventory = async (req, res, next) => {
     });
   }
 }
+
+// @route  GET all inventories of a user
+// @desc   Get all inventories of a user
+// @access Private
+exports.getInventoriesOfUser = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const Inventories = await InventoriesModel.find({ user: id });
+    if (Inventories.length > 0) {
+      res.status(200).json({
+        status: "Success",
+        statusCode: 1,
+        message: "Inventories retrieved successfully",
+        data: Inventories,
+      });
+    } else {
+      res.status(404).json({
+        message: "No inventories found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: "Failed",
+      statusCode: 0,
+      message: "There was an error with this request",
+      error: `${error.message}`,
+    });
+  }
+}
