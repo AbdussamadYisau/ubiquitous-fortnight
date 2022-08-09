@@ -92,3 +92,32 @@ exports.getInventories = async (req, res, next) => {
     });
   }
 };
+
+exports.deleteInventory = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const inventory = await InventoriesModel.findById(id);
+    console.log(inventory);
+    if (!inventory) {
+      return res.status(404).json({
+        status: "Failed",
+        statusCode: 0,
+        message: "Inventory not found",
+      });
+    } else {
+      await InventoriesModel.findByIdAndDelete(id);
+      return res.status(200).json({
+        status: "Success",
+        statusCode: 1,
+        message: "Inventory deleted successfully",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: "Failed",
+      statusCode: 0,
+      message: "There was an error with this request",
+      error: `${error.message}`,
+    });
+  }
+}

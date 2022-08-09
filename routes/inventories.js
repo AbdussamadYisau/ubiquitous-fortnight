@@ -5,6 +5,7 @@ require("dotenv/config");
 const {
     getInventories,
     createInventory,
+    deleteInventory
 } = require("../controllers/inventories");
 const { uploadDoc } = require("../utils");
 
@@ -16,5 +17,7 @@ router.get("/inventories", requireSignin, userMiddleware, getInventories);
 // @route POST /inventories
 router.post("/inventories", uploadDoc, requireSignin, userMiddleware, createInventory);
 
+// @route DELETE /inventories/:id
+router.delete("/inventories/:id", requireSignin, adminMiddleware, deleteInventory);
 
 module.exports = router;
