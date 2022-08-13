@@ -5,7 +5,7 @@ require("dotenv/config");
 // @desc   Create a new inventory
 // @access Private
 exports.createInventory = async (req, res, next) => {
-  const { name, description, category } = req.body;
+  const { name, description, category, psnNumber } = req.body;
 
   if (!req.file) {
     return res.status(400).json({
@@ -19,6 +19,7 @@ exports.createInventory = async (req, res, next) => {
         name,
         description,
         category,
+        psnNumber
       });
 
       if (inventoryCheck.length > 0) {
@@ -34,6 +35,7 @@ exports.createInventory = async (req, res, next) => {
           description,
           category,
           document,
+          psnNumber
         });
 
         await newInventory

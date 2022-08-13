@@ -32,6 +32,10 @@ const inventorySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    psnNumber: {
+        type: Number,
+        required: true,
+    },
 },
 {timestamps: true}
 );
