@@ -7,6 +7,7 @@ const {
     createInventory,
     deleteInventory,
     getInventoriesOfUser,
+    searchInventoriesOfUser
 } = require("../controllers/inventories");
 const { uploadDoc } = require("../utils");
 
@@ -16,12 +17,15 @@ const { uploadDoc } = require("../utils");
 router.get("/inventories", requireSignin, adminMiddleware, getInventories);
 
 // @route POST /inventories
-router.post("/inventories", uploadDoc, requireSignin, userMiddleware, createInventory);
+router.post("/inventories", uploadDoc, requireSignin, createInventory);
 
 // @route DELETE /inventories/:id
 router.delete("/inventories/:id", requireSignin, adminMiddleware, deleteInventory);
 
 // @route GET /inventories/:id
 router.get("/inventories/:id", requireSignin, getInventoriesOfUser);
+
+// @route GET /inventories/search/:id
+router.get("/inventories/search/:id", requireSignin, searchInventoriesOfUser);
 
 module.exports = router;
