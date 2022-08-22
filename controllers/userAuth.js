@@ -229,7 +229,17 @@ const login = (req, res) => {
   );
 };
 
-const getAllUsers = (req, res) => {
+const getAllUsers =  async (req, res) => {
+
+  const limitValue = parseInt(req.query.limit) || 2;
+  const skipValue = parseInt(req.query.page) || 0;
+
+  //  Find Total number of users 
+  const totalUsers = await UserModel.find({role: "user"});
+  const totalUsersCount = totalUsers.length;
+
+  const totalPages = Math.ceil(totalUsersCount / limitValue);
+
   UserModel.find({ role: "user" })
     .select({
       password: 0,
@@ -237,14 +247,18 @@ const getAllUsers = (req, res) => {
       passwordRetrieve: 0,
       role: 0,
     })
+    .limit(limitValue)
+    .skip(skipValue)
     .exec()
     .then((users) => {
       return res.status(200).json({
         status: "Success",
         statusCode: 1,
         message: "List of users gotten successfully",
+        page: skipValue,
+        limit: limitValue,
+        totalPages,
         data: users,
-        count: users.length,
       });
     })
     .catch((error) => {
@@ -257,21 +271,34 @@ const getAllUsers = (req, res) => {
     });
 };
 
-const getAllAdmins = (req, res) => {
+const getAllAdmins = async (req, res) => {
+  const limitValue = parseInt(req.query.limit) || 2;
+  const skipValue = parseInt(req.query.page) || 0;
+
+  //  Find Total number of users 
+  const totalUsers = await UserModel.find({role: "admin"});
+  const totalUsersCount = totalUsers.length;
+
+  const totalPages = Math.ceil(totalUsersCount / limitValue);
+
   UserModel.find({ role: "admin" })
     .select({
       password: 0,
       rememberToken: 0,
       passwordRetrieve: 0,
     })
+    .limit(limitValue)
+    .skip(skipValue)
     .exec()
     .then((admin) => {
       return res.status(200).json({
         status: "Success",
         statusCode: 1,
         message: "List of admins retrieved successfully",
+        page: skipValue,
+        limit: limitValue,
+        totalPages,
         data: admin,
-        count: admin.length,
       });
     })
     .catch((error) => {
@@ -412,6 +439,15 @@ const sortUsers = async (req, res) => {
 
   sort[sortBy] = sortOrderHashmap[sortOrder] || -1 ;
 
+  const limitValue = parseInt(req.query.limit) || 2;
+  const skipValue = parseInt(req.query.page) || 0;
+
+  //  Find Total number of users 
+  const totalUsers = await UserModel.find({});
+  const totalUsersCount = totalUsers.length;
+
+  const totalPages = Math.ceil(totalUsersCount / limitValue);
+
   try {
     const users = await UserModel.find({})
       .select({
@@ -420,13 +456,18 @@ const sortUsers = async (req, res) => {
         passwordRetrieve: 0,
         role: 0,
       })
-      .sort(sort);
+      .sort(sort)
+      .limit(limitValue)
+      .skip(skipValue)
+      ;
     return res.status(200).json({
       status: "Success",
       statusCode: 1,
       message: "Users sorted successfully",
+      page: skipValue,
+      limit: limitValue,
+      totalPages,
       data: users,
-      count: users.length,
     });
   } catch (error) {
     return res.status(500).json({

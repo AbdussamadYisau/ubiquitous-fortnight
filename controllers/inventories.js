@@ -70,7 +70,13 @@ exports.createInventory = async (req, res, next) => {
 exports.getInventories = async (req, res, next) => {
   try {
     const limitValue = parseInt(req.query.limit) || 2;
-    const skipValue = req.query.skip || 0;
+    const skipValue = parseInt(req.query.page) || 0;
+
+    //  Find total number of inventories
+    const totalInventories = await InventoriesModel.find({});
+    const totalInventoriesCount = totalInventories.length;
+    const totalPages = Math.ceil(totalInventoriesCount / limitValue);
+
     const Inventories = await InventoriesModel.find().populate(
       "user",
       "_id fullname email role psnNumber localGovernmentArea ministry dateOfFirstAssignment lastPromotionDate "
@@ -78,6 +84,7 @@ exports.getInventories = async (req, res, next) => {
     .limit(limitValue)
     .skip(skipValue);
     ;
+
     if (Inventories.length > 0) {
       res.status(200).json({
         status: "Success",
@@ -85,6 +92,7 @@ exports.getInventories = async (req, res, next) => {
         message: "Inventories retrieved successfully",
         page: skipValue,
         size: limitValue,
+        totalPages,
         data: Inventories,
       });
     } else {
@@ -106,7 +114,6 @@ exports.deleteInventory = async (req, res, next) => {
   const { id } = req.params;
   try {
     const inventory = await InventoriesModel.findById(id);
-    console.log(inventory);
     if (!inventory) {
       return res.status(404).json({
         status: "Failed",
@@ -136,13 +143,28 @@ exports.deleteInventory = async (req, res, next) => {
 // @access Private
 exports.getInventoriesOfUser = async (req, res, next) => {
   const { id } = req.params;
+
   try {
-    const Inventories = await InventoriesModel.find({ user: id });
+    const limitValue = parseInt(req.query.limit) || 2;
+    const skipValue = parseInt(req.query.page) || 0;
+
+    //  Find total number of inventories
+    const totalInventories = await InventoriesModel.find({user: id});
+    const totalInventoriesCount = totalInventories.length;
+
+    const totalPages = Math.ceil(totalInventoriesCount / limitValue);
+
+    const Inventories = await InventoriesModel.find({ user: id })
+      .limit(limitValue)
+      .skip(skipValue);
     if (Inventories.length > 0) {
       res.status(200).json({
         status: "Success",
         statusCode: 1,
         message: "Inventories retrieved successfully",
+        page: skipValue,
+        size: limitValue,
+        totalPages,
         data: Inventories,
       });
     } else {
