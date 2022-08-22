@@ -75,8 +75,8 @@ exports.getInventories = async (req, res, next) => {
       "user",
       "_id fullname email role psnNumber localGovernmentArea ministry dateOfFirstAssignment lastPromotionDate "
     )
-    // .limit(limitValue)
-    // .skip(skipValue);
+    .limit(limitValue)
+    .skip(skipValue);
     ;
     if (Inventories.length > 0) {
       res.status(200).json({
