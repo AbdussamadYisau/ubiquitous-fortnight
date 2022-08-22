@@ -67,15 +67,22 @@ exports.createInventory = async (req, res, next) => {
 // @access Private
 exports.getInventories = async (req, res, next) => {
   try {
+    const limitValue = parseInt(req.query.limit) || 2;
+    const skipValue = req.query.skip || 0;
     const Inventories = await InventoriesModel.find().populate(
       "user",
       "_id fullname email role psnNumber localGovernmentArea ministry dateOfFirstAssignment lastPromotionDate "
-    );
+    )
+    // .limit(limitValue)
+    // .skip(skipValue);
+    ;
     if (Inventories.length > 0) {
       res.status(200).json({
         status: "Success",
         statusCode: 1,
         message: "Inventories retrieved successfully",
+        page: skipValue,
+        size: limitValue,
         data: Inventories,
       });
     } else {
