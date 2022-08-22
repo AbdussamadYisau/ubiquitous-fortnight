@@ -145,7 +145,7 @@ exports.getInventoriesOfUser = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const limitValue = parseInt(req.query.limit) || 2;
+    const limitValue = parseInt(req.query.limit) || 10;
     const skipValue = parseInt(req.query.page) || 0;
 
     //  Find total number of inventories

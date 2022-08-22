@@ -272,7 +272,7 @@ const getAllUsers =  async (req, res) => {
 };
 
 const getAllAdmins = async (req, res) => {
-  const limitValue = parseInt(req.query.limit) || 2;
+  const limitValue = parseInt(req.query.limit) || 10;
   const skipValue = parseInt(req.query.page) || 0;
 
   //  Find Total number of users 
@@ -439,7 +439,7 @@ const sortUsers = async (req, res) => {
 
   sort[sortBy] = sortOrderHashmap[sortOrder] || -1 ;
 
-  const limitValue = parseInt(req.query.limit) || 2;
+  const limitValue = parseInt(req.query.limit) || 10;
   const skipValue = parseInt(req.query.page) || 0;
 
   //  Find Total number of users 
