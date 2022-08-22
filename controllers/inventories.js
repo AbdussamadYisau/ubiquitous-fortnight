@@ -5,7 +5,7 @@ require("dotenv/config");
 // @desc   Create a new inventory
 // @access Private
 exports.createInventory = async (req, res, next) => {
-  const { name, description, category } = req.body;
+  const { name, description, category, psnNumber } = req.body;
 
   if (!req.file) {
     return res.status(400).json({
@@ -19,6 +19,7 @@ exports.createInventory = async (req, res, next) => {
         name,
         description,
         category,
+        psnNumber
       });
 
       if (inventoryCheck.length > 0) {
@@ -34,6 +35,7 @@ exports.createInventory = async (req, res, next) => {
           description,
           category,
           document,
+          psnNumber
         });
 
         await newInventory
@@ -88,6 +90,92 @@ exports.getInventories = async (req, res, next) => {
     } else {
       res.status(404).json({
         msg: "No inventories found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: "Failed",
+      statusCode: 0,
+      message: "There was an error with this request",
+      error: `${error.message}`,
+    });
+  }
+};
+
+exports.deleteInventory = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const inventory = await InventoriesModel.findById(id);
+    console.log(inventory);
+    if (!inventory) {
+      return res.status(404).json({
+        status: "Failed",
+        statusCode: 0,
+        message: "Inventory not found",
+      });
+    } else {
+      await InventoriesModel.findByIdAndDelete(id);
+      return res.status(200).json({
+        status: "Success",
+        statusCode: 1,
+        message: "Inventory deleted successfully",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: "Failed",
+      statusCode: 0,
+      message: "There was an error with this request",
+      error: `${error.message}`,
+    });
+  }
+}
+
+// @route  GET all inventories of a user
+// @desc   Get all inventories of a user
+// @access Private
+exports.getInventoriesOfUser = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const Inventories = await InventoriesModel.find({ user: id });
+    if (Inventories.length > 0) {
+      res.status(200).json({
+        status: "Success",
+        statusCode: 1,
+        message: "Inventories retrieved successfully",
+        data: Inventories,
+      });
+    } else {
+      res.status(404).json({
+        message: "No inventories found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: "Failed",
+      statusCode: 0,
+      message: "There was an error with this request",
+      error: `${error.message}`,
+    });
+  }
+}
+
+// search inventories of a user by psnNumber
+exports.searchInventoriesOfUser = async (req, res, next) => {
+  const { id } = req.params;
+  const { psnNumber } = req.query;
+  try {
+    const Inventories = await InventoriesModel.find({ user: id, psnNumber });
+    if (Inventories.length > 0) {
+      res.status(200).json({
+        status: "Success",
+        statusCode: 1,
+        message: "Inventories retrieved successfully",
+        data: Inventories,
+      });
+    } else {
+      res.status(404).json({
+        message: "No inventories found",
       });
     }
   } catch (error) {

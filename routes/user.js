@@ -11,6 +11,7 @@ const {
   changePassword,
   getUser,
   deleteUser,
+  sortUsers
 } = require("../controllers/userAuth");
 const { validateSigninRequest, validateSignupRequest, isRequestValidated } = require("../validators/auth");
 
@@ -39,5 +40,8 @@ router.post("/resetPassword/:email/:token", resetPassword);
 router.get("/getUser/:id", requireSignin, userMiddleware, getUser);
 
 router.post("/deleteUser/:id", requireSignin, userMiddleware, deleteUser);
+
+// @route GET /sortUsers
+router.get("/sortUsers", requireSignin, adminMiddleware, sortUsers);
 
 module.exports = router;

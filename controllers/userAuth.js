@@ -95,7 +95,17 @@ const register = (req, res) => {
       lastPromotionDate,
     } = req.body;
 
-    // Remember date format is MM-DD-YYYY
+    // check if there is a role in req.body
+    if (!req.body.role) {
+      req.body.role = "user";
+    } else {
+      req.body.role = "admin";
+    }
+
+    const role = req.body.role;
+
+
+    // Remember date format is MM-DD-YYYY 
     // Converting date format to DD-MM-YYYY
     const dateOfFirstAssignment_ = dateOfFirstAssignment.split("/");
     const lastPromotionDate_ = lastPromotionDate.split("/");
@@ -103,6 +113,7 @@ const register = (req, res) => {
     const lastPromotionDate_new = `${lastPromotionDate_[1]}-${lastPromotionDate_[0]}-${lastPromotionDate_[2]}`;
 
     const hash_password = await bcrypt.hash(password, 10);
+
     const _user = new UserModel({
       fullname,
       email: email.toLowerCase(),
@@ -112,6 +123,7 @@ const register = (req, res) => {
       ministry,
       dateOfFirstAssignment: new Date(dateOfFirstAssignment_new),
       lastPromotionDate: new Date(lastPromotionDate_new),
+      role,
     });
 
     _user.save(async (error, user) => {
@@ -169,7 +181,7 @@ const login = (req, res) => {
           req.body.password,
           user.password
         );
-        if (isPassword && user.role === "user") {
+        if (isPassword) {
           const token = generateJwtToken(user._id, user.role, user.fullname);
           const {
             _id,
@@ -383,6 +395,49 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const sortUsers = async (req, res) => {
+
+  const {sortBy, sortOrder} = req.query;
+
+  const sortOrderHashmap = {
+    'asc': 1,
+    'desc': -1,
+    1 : 1,
+  };
+
+  // sort in ascending order
+  const sort = {
+    length : 1,
+  };
+
+  sort[sortBy] = sortOrderHashmap[sortOrder] || -1 ;
+
+  try {
+    const users = await UserModel.find({})
+      .select({
+        password: 0,
+        rememberToken: 0,
+        passwordRetrieve: 0,
+        role: 0,
+      })
+      .sort(sort);
+    return res.status(200).json({
+      status: "Success",
+      statusCode: 1,
+      message: "Users sorted successfully",
+      data: users,
+      count: users.length,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "Failed",
+      statusCode: 0,
+      message: "There was an error with this request",
+      error: `${error.message}`,
+    });
+  }
+};
+
 module.exports = {
   recover,
   resetPassword,
@@ -393,4 +448,5 @@ module.exports = {
   changePassword,
   getUser,
   deleteUser,
+  sortUsers,
 };
