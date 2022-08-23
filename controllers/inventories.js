@@ -69,7 +69,7 @@ exports.createInventory = async (req, res, next) => {
 // @access Private
 exports.getInventories = async (req, res, next) => {
   try {
-    const limitValue = parseInt(req.query.limit) || 2;
+    const limitValue = parseInt(req.query.limit) || 10;
     const skipValue = parseInt(req.query.page) || 0;
 
     //  Find total number of inventories
@@ -181,6 +181,33 @@ exports.getInventoriesOfUser = async (req, res, next) => {
     });
   }
 }
+
+// search inventories by psnNumber
+exports.searchInventories = async (req, res, next) => {
+  const { psnNumber } = req.query;
+  try {
+    const Inventories = await InventoriesModel.find({ psnNumber });
+    if (Inventories.length > 0) {
+      res.status(200).json({
+        status: "Success",
+        statusCode: 1,
+        message: "Inventories retrieved successfully",
+        data: Inventories,
+      });
+    } else {
+      res.status(404).json({
+        message: "No inventories found",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: "Failed",
+      statusCode: 0,
+      message: "There was an error with this request",
+      error: `${error.message}`,
+    });
+  }
+};
 
 // search inventories of a user by psnNumber
 exports.searchInventoriesOfUser = async (req, res, next) => {

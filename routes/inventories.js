@@ -7,7 +7,8 @@ const {
     createInventory,
     deleteInventory,
     getInventoriesOfUser,
-    searchInventoriesOfUser
+    searchInventoriesOfUser,
+    searchInventories
 } = require("../controllers/inventories");
 const { uploadDoc } = require("../utils");
 
@@ -27,5 +28,9 @@ router.get("/inventories/:id", requireSignin, getInventoriesOfUser);
 
 // @route GET /inventories/search/:id
 router.get("/inventories/search/:id", requireSignin, searchInventoriesOfUser);
+
+// @route GET /inventories/searchInventory
+router.get("/inventories/searchInventory", requireSignin, searchInventories);
+
 
 module.exports = router;
