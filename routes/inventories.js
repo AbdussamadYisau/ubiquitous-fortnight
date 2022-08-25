@@ -30,7 +30,7 @@ router.get("/inventories/:id", requireSignin, getInventoriesOfUser);
 router.get("/inventories/search/:id", requireSignin, searchInventoriesOfUser);
 
 // @route GET /inventories/searchInventory
-router.get("/inventories/searchInventory", requireSignin, searchInventories);
+router.get("/searchInventory", requireSignin, searchInventories);
 
 
 module.exports = router;

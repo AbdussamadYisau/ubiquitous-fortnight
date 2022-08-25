@@ -186,6 +186,7 @@ exports.getInventoriesOfUser = async (req, res, next) => {
 exports.searchInventories = async (req, res, next) => {
   const { psnNumber } = req.query;
   try {
+  
     const Inventories = await InventoriesModel.find({ psnNumber });
     if (Inventories.length > 0) {
       res.status(200).json({
