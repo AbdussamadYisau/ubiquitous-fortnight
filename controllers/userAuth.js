@@ -424,20 +424,20 @@ const deleteUser = async (req, res) => {
 
 const sortUsers = async (req, res) => {
 
-  const {sortBy, sortOrder} = req.query;
+  // const {sortBy, sortOrder} = req.query;
 
-  const sortOrderHashmap = {
-    'asc': 1,
-    'desc': -1,
-    1 : 1,
-  };
+  // const sortOrderHashmap = {
+  //   'asc': 1,
+  //   'desc': -1,
+  //   1 : 1,
+  // };
 
   // sort in ascending order
   const sort = {
     length : 1,
   };
 
-  sort[sortBy] = sortOrderHashmap[sortOrder] || -1 ;
+  // sort[sortBy] = sortOrderHashmap[sortOrder] || -1 ;
 
   const limitValue = parseInt(req.query.limit) || 10;
   const skipValue = parseInt(req.query.page) || 0;
