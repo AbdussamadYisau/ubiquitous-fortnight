@@ -28,7 +28,7 @@ isRequestValidated,
 login);
 
 // @route GET /customers
-router.get("/users/customers", requireSignin, userMiddleware, getAllUsers);
+router.get("/users/customers", requireSignin, adminMiddleware, getAllUsers);
 
 // @route POST /changePassword
 router.post("/changePassword/:id", requireSignin, changePassword);
