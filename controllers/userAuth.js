@@ -454,11 +454,10 @@ const sortUsers = async (req, res) => {
         password: 0,
         rememberToken: 0,
         passwordRetrieve: 0,
-        // role: 0,
       })
-      .sort(sort)
       .limit(limitValue)
       .skip(skipValue)
+      .sort(sort)
       ;
     return res.status(200).json({
       status: "Success",
