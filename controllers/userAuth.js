@@ -231,8 +231,8 @@ const login = (req, res) => {
 
 const getAllUsers =  async (req, res) => {
 
-  const limitValue = parseInt(req.query.limit) || 2;
-  const skipValue = parseInt(req.query.page) || 0;
+  const limitValue = parseInt(req.query.limit) || 10;
+  const skipValue = parseInt(req.query.page) || 1;
 
   //  Find Total number of users 
   const totalUsers = await UserModel.find({role: "user"});
@@ -247,8 +247,8 @@ const getAllUsers =  async (req, res) => {
       passwordRetrieve: 0,
       role: 0,
     })
-    .limit(limitValue)
-    .skip(skipValue)
+    .skip(limitValue * (skipValue - 1))
+    .limit(limitValue) 
     .exec()
     .then((users) => {
       return res.status(200).json({
@@ -273,7 +273,7 @@ const getAllUsers =  async (req, res) => {
 
 const getAllAdmins = async (req, res) => {
   const limitValue = parseInt(req.query.limit) || 10;
-  const skipValue = parseInt(req.query.page) || 0;
+  const skipValue = parseInt(req.query.page) || 1;
 
   //  Find Total number of users 
   const totalUsers = await UserModel.find({role: "admin"});
@@ -287,8 +287,8 @@ const getAllAdmins = async (req, res) => {
       rememberToken: 0,
       passwordRetrieve: 0,
     })
+    .skip(limitValue * (skipValue - 1))
     .limit(limitValue)
-    .skip(skipValue)
     .exec()
     .then((admin) => {
       return res.status(200).json({
@@ -440,7 +440,7 @@ const sortUsers = async (req, res) => {
   sort[sortBy] = sortOrderHashmap[sortOrder] || -1 ;
 
   const limitValue = parseInt(req.query.limit) || 10;
-  const skipValue = parseInt(req.query.page) || 0;
+  const skipValue = parseInt(req.query.page) || 1;
 
   //  Find Total number of users 
   const totalUsers = await UserModel.find({});
