@@ -455,8 +455,8 @@ const sortUsers = async (req, res) => {
         rememberToken: 0,
         passwordRetrieve: 0,
       })
+      .skip(limitValue * (skipValue - 1))
       .limit(limitValue)
-      .skip(skipValue)
       .sort(sort)
       ;
     return res.status(200).json({
