@@ -70,36 +70,39 @@ exports.createInventory = async (req, res, next) => {
 exports.getInventories = async (req, res, next) => {
   try {
     const limitValue = parseInt(req.query.limit) || 10;
-    const skipValue = parseInt(req.query.page) || 0;
+    const skipValue = parseInt(req.query.page) || 1;
 
     //  Find total number of inventories
     const totalInventories = await InventoriesModel.find({});
     const totalInventoriesCount = totalInventories.length;
     const totalPages = Math.ceil(totalInventoriesCount / limitValue);
 
-    const Inventories = await InventoriesModel.find().populate(
+    InventoriesModel.find().populate(
       "user",
       "_id fullname email role psnNumber localGovernmentArea ministry dateOfFirstAssignment lastPromotionDate "
     )
+    .skip(limitValue * ( skipValue - 1))
     .limit(limitValue)
-    .skip(skipValue);
-    ;
+    .exec()
+    .then((data) => {
 
-    if (Inventories.length > 0) {
-      res.status(200).json({
-        status: "Success",
-        statusCode: 1,
-        message: "Inventories retrieved successfully",
-        page: skipValue,
-        size: limitValue,
-        totalPages,
-        data: Inventories,
-      });
-    } else {
-      res.status(404).json({
-        msg: "No inventories found",
-      });
-    }
+      if (data.length > 0) {
+        return res.status(200).json({
+          status: "Success",
+          statusCode: 1,
+          message: "Inventories retrieved successfully",
+          page: skipValue,
+          size: limitValue,
+          totalPages,
+          data: data,
+        });
+      } else {
+        return res.status(404).json({
+          msg: "No inventories found",
+        });
+      }
+    });
+   
   } catch (error) {
     return res.status(500).json({
       status: "Failed",
@@ -146,7 +149,7 @@ exports.getInventoriesOfUser = async (req, res, next) => {
 
   try {
     const limitValue = parseInt(req.query.limit) || 10;
-    const skipValue = parseInt(req.query.page) || 0;
+    const skipValue = parseInt(req.query.page) || 1;
 
     //  Find total number of inventories
     const totalInventories = await InventoriesModel.find({user: id});
@@ -154,24 +157,31 @@ exports.getInventoriesOfUser = async (req, res, next) => {
 
     const totalPages = Math.ceil(totalInventoriesCount / limitValue);
 
-    const Inventories = await InventoriesModel.find({ user: id })
-      .limit(limitValue)
-      .skip(skipValue);
-    if (Inventories.length > 0) {
-      res.status(200).json({
-        status: "Success",
-        statusCode: 1,
-        message: "Inventories retrieved successfully",
-        page: skipValue,
-        size: limitValue,
-        totalPages,
-        data: Inventories,
-      });
-    } else {
-      res.status(404).json({
-        message: "No inventories found",
-      });
-    }
+    InventoriesModel.find({user:id}).populate(
+      "user",
+      "_id fullname email role psnNumber localGovernmentArea ministry dateOfFirstAssignment lastPromotionDate "
+    )
+    .skip(limitValue * ( skipValue - 1))
+    .limit(limitValue)
+    .exec()
+    .then((data) => {
+
+      if (data.length > 0) {
+        return res.status(200).json({
+          status: "Success",
+          statusCode: 1,
+          message: "Inventories retrieved successfully",
+          page: skipValue,
+          size: limitValue,
+          totalPages,
+          data: data,
+        });
+      } else {
+        return res.status(404).json({
+          msg: "No inventories found",
+        });
+      }
+    });
   } catch (error) {
     return res.status(500).json({
       status: "Failed",
@@ -186,20 +196,40 @@ exports.getInventoriesOfUser = async (req, res, next) => {
 exports.searchInventories = async (req, res, next) => {
   const { psnNumber } = req.query;
   try {
+    const limitValue = parseInt(req.query.limit) || 10;
+    const skipValue = parseInt(req.query.page) || 1;
   
-    const Inventories = await InventoriesModel.find({ psnNumber });
-    if (Inventories.length > 0) {
-      res.status(200).json({
-        status: "Success",
-        statusCode: 1,
-        message: "Inventories retrieved successfully",
-        data: Inventories,
-      });
-    } else {
-      res.status(404).json({
-        message: "No inventories found",
-      });
-    }
+    //  Find total number of inventories
+    const totalInventories = await InventoriesModel.find({psnNumber});
+    const totalInventoriesCount = totalInventories.length;
+  
+    const totalPages = Math.ceil(totalInventoriesCount / limitValue);
+  
+    InventoriesModel.find({ psnNumber }).populate(
+      "user",
+      "_id fullname email role psnNumber localGovernmentArea ministry dateOfFirstAssignment lastPromotionDate "
+    )
+    .skip(limitValue * ( skipValue - 1))
+    .limit(limitValue)
+    .exec()
+    .then((data) => {
+  
+      if (data.length > 0) {
+        return res.status(200).json({
+          status: "Success",
+          statusCode: 1,
+          message: "Inventories retrieved successfully",
+          page: skipValue,
+          size: limitValue,
+          totalPages,
+          data: data,
+        });
+      } else {
+        return res.status(404).json({
+          msg: "No inventories found",
+        });
+      }
+    });
   } catch (error) {
     return res.status(500).json({
       status: "Failed",
@@ -215,19 +245,40 @@ exports.searchInventoriesOfUser = async (req, res, next) => {
   const { id } = req.params;
   const { psnNumber } = req.query;
   try {
-    const Inventories = await InventoriesModel.find({ user: id, psnNumber });
-    if (Inventories.length > 0) {
-      res.status(200).json({
+  const limitValue = parseInt(req.query.limit) || 10;
+  const skipValue = parseInt(req.query.page) || 1;
+
+  //  Find total number of inventories
+  const totalInventories = await InventoriesModel.find({user: id, psnNumber});
+  const totalInventoriesCount = totalInventories.length;
+
+  const totalPages = Math.ceil(totalInventoriesCount / limitValue);
+
+  InventoriesModel.find({user:id, psnNumber}).populate(
+    "user",
+    "_id fullname email role psnNumber localGovernmentArea ministry dateOfFirstAssignment lastPromotionDate "
+  )
+  .skip(limitValue * ( skipValue - 1))
+  .limit(limitValue)
+  .exec()
+  .then((data) => {
+
+    if (data.length > 0) {
+      return res.status(200).json({
         status: "Success",
         statusCode: 1,
         message: "Inventories retrieved successfully",
-        data: Inventories,
+        page: skipValue,
+        size: limitValue,
+        totalPages,
+        data: data,
       });
     } else {
-      res.status(404).json({
-        message: "No inventories found",
+      return res.status(404).json({
+        msg: "No inventories found",
       });
     }
+  });
   } catch (error) {
     return res.status(500).json({
       status: "Failed",

@@ -54,7 +54,7 @@ const resetPassword = async (req, res, next) => {
       JsonResponse(res, 401, "Password otp is invalid");
     }
     const isValidPassword = await bcrypt.compare(password, user.password);
-    newPassword = await bcrypt.hash(password, 10);
+    const newPassword = await bcrypt.hash(password, 10);
 
     if (isValidPassword) {
       JsonResponse(res, 400, "You have used this password before");
